@@ -5,6 +5,7 @@ import firestore from '@react-native-firebase/firestore';
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from 'react-native-popup-menu';
 import { useMyContextProvider } from "../index";
 import { useNavigation } from '@react-navigation/native'; // Thêm import này
+import colors from '../screens/colors'; // Thêm import này
 
 const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
@@ -63,7 +64,9 @@ const Appointments = () => {
                         Trạng thái: {item.state === 'new' ? 'Đang giao' : 'Đã hoàn thành'}
                     </Paragraph>
                     <Paragraph style={styles.text}>Thời gian: {item.datetime ? item.datetime.toDate().toLocaleString() : 'Không xác định'}</Paragraph>
-                    <Paragraph style={styles.text}>Tổng tiền: {item.totalPrice} vnđ</Paragraph>
+                    <Paragraph style={styles.text}>
+                        Tổng tiền: {item.totalPrice.toLocaleString('vi-VN')} vnđ
+                    </Paragraph>
                     {service && <Paragraph style={styles.text}>Dịch vụ: {service.name}</Paragraph>} 
                     <Button onPress={() => navigation.navigate('OrderDetail', { order: item })}>Xem chi tiết</Button>
                 </Card.Content>
@@ -77,8 +80,10 @@ const Appointments = () => {
 
     return (
         <View style={{ flex: 1 , backgroundColor:"white"}}>
-            <View style={{ backgroundColor:"orange"}}>
-                <Text style={{ padding: 15, fontSize: 25, fontWeight: "bold", backgroundColor:"orange" }}>Đơn hàng</Text>
+            <View style={{ backgroundColor:colors.background }}>
+                <Text style={{ padding: 15, fontSize: 25, fontWeight: "bold", backgroundColor: colors.background, textAlign: "center", color: "#fff" }}>
+                    Đơn hàng
+                </Text>
             </View>
             <FlatList
                 data={appointments}

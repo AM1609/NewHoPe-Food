@@ -41,7 +41,7 @@ const Appointment = ({navigation, route }) => {
       
     const handleAddToCart = (service) => {
         addToCart(service, quantity, selectedOptions); // Truyền selectedOptions vào addToCart
-        Alert.alert("Thông báo", `Sản phẩm đã được thêm vào giỏ hàng! Tổng giá tùy chọn: ${optionPrice.toLocaleString()} ₫`, [
+        Alert.alert("Thông báo", `Sản phẩm đã được thêm vào giỏ hàng! Tổng giá tùy chọn: ${optionPrice.toLocaleString('vi-VN')} ₫`, [
             { text: "OK", onPress: () => navigation.goBack() } // Quay lại trang trước
            
         ]);
@@ -76,7 +76,9 @@ const Appointment = ({navigation, route }) => {
                             onValueChange={() => toggleOption(item.id)}
                         />
                         <Text style={styles.optionTitle}>{item.OptionName}</Text>
-                        <Text style={styles.optionPrice}>{item.Price} ₫</Text>
+                        <Text style={styles.optionPrice}>
+                            {Number(item.Price).toLocaleString('vi-VN')} ₫
+                        </Text>
                     </View>
                 )}
                 ListHeaderComponent={
@@ -93,7 +95,7 @@ const Appointment = ({navigation, route }) => {
                         <View style={styles.serviceInfo}>
                             <Text style={styles.serviceTitle}>{service && service.title}</Text>
                             <Text style={styles.servicePrice}>
-                                {Number(service && service.price).toLocaleString()} ₫
+                                {Number(service && service.price).toLocaleString('vi-VN')} ₫
                             </Text>
                         </View>
                         <DatePicker
@@ -106,9 +108,9 @@ const Appointment = ({navigation, route }) => {
                             }}
                             onCancel={() => setOpen(false)}
                         />
-                        <Text style={styles.totalOptionPrice}>Tổng giá tùy chọn: {optionPrice.toLocaleString()} ₫</Text> 
+                        <Text style={styles.totalOptionPrice}>Tổng giá tùy chọn: {optionPrice.toLocaleString('vi-VN')} ₫</Text> 
                         <Text style={styles.totalServicePrice}>
-                            Tổng giá dịch vụ: {totalPrice.toLocaleString()} ₫
+                            Tổng giá dịch vụ: {totalPrice.toLocaleString('vi-VN')} ₫
                         </Text> 
                     </View>
                 }

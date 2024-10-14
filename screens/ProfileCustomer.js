@@ -3,6 +3,7 @@ import { Text } from "react-native-paper";
 import { View, StyleSheet,Button } from "react-native";
 import {logout, useMyContextProvider } from "../index";
 import { NavigationContainer } from "@react-navigation/native";
+import colors from '../screens/colors';
 
 const ProfileCustomer = ({navigation}) =>{
     const [controller, dispatch] = useMyContextProvider();
@@ -21,7 +22,7 @@ const ProfileCustomer = ({navigation}) =>{
     };
     return(
         <View style={styles.container}>
-            <Text style={styles.header}>Hồ sơ</Text>
+            <Text style={[styles.header, { color: '#fff' }]}>Hồ sơ</Text>
             <View style={styles.contentContainer}>
                 {userLogin !== null && (
                     <>
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
         padding: 15,
         fontSize: 25,
         fontWeight: 'bold',
-        backgroundColor: 'orange',
-        textAlign: 'center',
+        backgroundColor: colors.background, // Use color from colors.js
+        textAlign: 'center', // Center the text
     },
     infoCard: {
         backgroundColor: '#f9f9f9',

@@ -1,107 +1,154 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { Image, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 import { useMyContextProvider, login } from '../index';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import colors from '../screens/colors';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [controller, dispatch] = useMyContextProvider();
   const { userLogin } = controller;
   const [showPassword, setShowPassword] = useState(false);
   const [disableLogin, setDisableLogin] = useState(true);
 
-  const hasErrorEmail = () => !email.includes("@");
-  const hasErrorPassword = () => password.length < 6;
+  const hasErrorEmail = () => emailTouched && !email.includes("@");
+  const hasErrorPassword = () => passwordTouched && password.length < 6;
 
   useEffect(() => {
     setDisableLogin(email.trim() === '' || password.trim() === '' || hasErrorEmail() || hasErrorPassword());
-  }, [email, password, hasErrorEmail, hasErrorPassword]);
+  }, [email, password, emailTouched, passwordTouched]);
 
   const handleLogin = () => {
     login(dispatch, email, password);
-    
   };
 
   useEffect(() => {
-    console.log(userLogin)
     if (userLogin != null) {
       if (userLogin.role === "admin")
-        navigation.navigate("Admin")
+        navigation.navigate("Admin");
       else if (userLogin.role === "customer")
-        navigation.navigate("Customer")
+        navigation.navigate("Customer");
     }
-  }, [userLogin])
+  }, [userLogin]);
 
   return (
-    <View style={{ flex: 1, padding: 10,backgroundColor:"orange" }}>
-      
-      <Image source={require("../assets/transcend_icon.png")}
-                style={{
-                    alignSelf: "center",
-                    marginTop: 80,
-                    marginBottom:80,
-                    width:200,
-                    height:200
-                }}
-            />
+    <View style={styles.container}>
+      <Image source={require("../assets/transcend_icon.png")} style={styles.logo} />
       <TextInput
-        label={"Email"}
+        label="Email"
         value={email}
         onChangeText={setEmail}
-        style={{ marginRight:40,marginLeft:40, backgroundColor:"white"}}
+        onBlur={() => setEmailTouched(true)}
+        style={styles.input}
+        mode="outlined"
+        theme={{ 
+          colors: { primary: '#000' },
+          fonts: { regular: { fontSize: 18 } }
+        }}
       />
-      <HelperText style={{marginLeft:35, fontSize:15}} type='error' visible={hasErrorEmail()}>
+      <HelperText type='error' visible={hasErrorEmail()} style={styles.helperText}>
         Địa chỉ Email không hợp lệ
       </HelperText>
       <TextInput
-          label={"Mật khẩu"}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={showPassword}
-          style={{ marginRight:40,marginLeft:40, backgroundColor:"white"}}
-        />
-      <HelperText style={{marginLeft:35, fontSize:15}} type='error' visible={hasErrorPassword()}>
+        label="Mật khẩu"
+        value={password}
+        onChangeText={setPassword}
+        onBlur={() => setPasswordTouched(true)}
+        secureTextEntry={!showPassword}
+        style={styles.input}
+        mode="outlined"
+        theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
+      />
+      <HelperText type='error' visible={hasErrorPassword()} style={styles.helperText}>
         Password có ít nhất 6 ký tự
       </HelperText>
-      <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ flexDirection: 'row', alignSelf: 'flex-start', alignItems: 'center', marginLeft: 40, marginTop:10 }}>
-          <Image
-            source={showPassword ? require('../assets/eye.png') : require('../assets/eye-hidden.png')}
-            style={{ width: 20, height: 20, marginRight:10}}
-          />
-          <Text style={{fontSize:18}}>Hiển thị mật khẩu</Text>
-        </TouchableOpacity>
-      <Button style={styles.buttondn} mode='contained' textColor='black'  buttonColor='white'  onPress={handleLogin} disabled={disableLogin}>
-      <Text style={{fontSize:20}}>Đăng nhập</Text>
+      <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showPassword}>
+        <Image
+          source={showPassword ? require('../assets/eye.png') : require('../assets/eye-hidden.png')}
+          style={styles.eyeIcon}
+        />
+        <Text style={styles.showPasswordText}>Hiển thị mật khẩu</Text>
+      </TouchableOpacity>
+      <Button
+        mode='contained'
+        onPress={handleLogin}
+        disabled={disableLogin}
+        style={styles.loginButton}
+        labelStyle={styles.loginButtonText}
+      >
+        Đăng nhập
       </Button>
-      <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-        
-        <Button  onPress={() => navigation.navigate("Register")} >
-        
-        <Text style={styles.creforgot}>Tạo tài khoản</Text>
+      <View style={styles.footer}>
+        <Button onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.footerText}>Tạo tài khoản</Text>
         </Button>
         <Button onPress={() => navigation.navigate("ForgotPassword")}>
-          
-          <Text style={styles.creforgot}>Quên mật khẩu</Text>
+          <Text style={styles.footerText}>Quên mật khẩu</Text>
         </Button>
       </View>
-      
-      
     </View>
   );
 };
 
 export default Login;
+
 const styles = StyleSheet.create({
-  buttondn:{
-    marginRight:40,marginLeft:40, marginTop:20, borderRadius:5
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
   },
-  
-  creforgot: {
-    paddingTop:10,
-    fontSize:18, 
-    color:"#0000FF"
-  }
+  logo: {
+    alignSelf: "center",
+    marginBottom: 40,
+    width: 200, // Increase width
+    height: 200, // Increase height
+  },
+  input: {
+    marginBottom: 10,
+    backgroundColor: "white",
+  },
+  helperText: {
+    marginLeft: 10,
+    fontSize: 15,
+  },
+  showPassword: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginBottom: 20,
+  },
+  eyeIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  showPasswordText: {
+    fontSize: 16,
+    color: colors.text,
+  },
+  loginButton: {
+    borderRadius: 5,
+    backgroundColor: colors.primary,
+    marginBottom: 20,
+  },
+  loginButtonText: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  footerText: {
+    fontSize: 18,
+    color: '#fff',
+    marginHorizontal: 20,
+  },
 });

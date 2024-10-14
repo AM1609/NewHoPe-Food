@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Alert, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { TextInput, HelperText } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
@@ -8,9 +8,12 @@ import {logout,  useMyContextProvider } from '../../store';
 
 const ChangePassword = () => {
   const [currentPass, setCurrentPass] = useState('');
-  const [password, setPassword] = useState('');
-  const hasErrorPass = () => password.length < 6
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
+
+  const hasErrorPass = () => newPassword.length < 6;
+  const passwordsMatch = () => newPassword === confirmPassword;
 
   const reauthenticate = () => {
     const user = auth().currentUser;
@@ -19,6 +22,11 @@ const ChangePassword = () => {
   };
   
   const handleChangePassword = async () => {
+    if (!passwordsMatch()) {
+      Alert.alert('Lỗi', 'Mật khẩu mới không khớp');
+      return;
+    }
+
     try {
       const user = auth().currentUser;
       
@@ -27,17 +35,17 @@ const ChangePassword = () => {
         return;
       }
       await reauthenticate();
-      await user.updatePassword(password);
+      await user.updatePassword(newPassword);
       firestore()
-            .collection('USERS')
-            .doc(user.email)
-            .update({password: password})
-            .then(() => {
-                console.log("Customer updated successfully!");
-                })
-            .catch(error => {
-                console.error("Error updating customer:", error);
-            });
+        .collection('USERS')
+        .doc(user.email)
+        .update({password: newPassword})
+        .then(() => {
+          console.log("Customer updated successfully!");
+        })
+        .catch(error => {
+          console.error("Error updating customer:", error);
+        });
       Alert.alert('Thành công', 'Cập nhật mật khẩu thành công, vui lòng đăng nhập lại');
       navigation.navigate("Login");
     } catch (error) {
@@ -46,29 +54,57 @@ const ChangePassword = () => {
   };
   
   return (
-    <View style={styles.container}>
-      <Text style={styles.textform}>Mật khẩu hiện tại</Text>
-      <TextInput
-        style={styles.input}
-        value={currentPass}
-        onChangeText={setCurrentPass}
-        secureTextEntry
-      />
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Đổi mật khẩu</Text>
+        
+        <TextInput
+          style={styles.input}
+          label="Mật khẩu hiện tại"
+          value={currentPass}
+          onChangeText={setCurrentPass}
+          secureTextEntry
+          mode="outlined"
+        />
 
-      <Text style={styles.textform}>Mật khẩu mới</Text>
-      <TextInput
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <HelperText style={{alignSelf:'flex-start', marginLeft: 25,marginRight: 30,fontSize:18}} 
-      type="error" visible={hasErrorPass()}>
-        Mật khẩu mới phải từ 6 kí tự trở lên</HelperText>
-      <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>Đổi mật khẩu</Text>
-      </TouchableOpacity>
-    </View>
+        <TextInput
+          style={styles.input}
+          label="Mật khẩu mới"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry
+          mode="outlined"
+        />
+        
+        <TextInput
+          style={styles.input}
+          label="Nhập lại mật khẩu mới"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          mode="outlined"
+        />
+        
+        <HelperText type="error" visible={hasErrorPass()}>
+          Mật khẩu mới phải từ 6 kí tự trở lên
+        </HelperText>
+
+        <HelperText type="error" visible={!passwordsMatch() && confirmPassword !== ''}>
+          Mật khẩu mới không khớp
+        </HelperText>
+
+        <TouchableOpacity 
+          style={[
+            styles.button,
+            (hasErrorPass() || !passwordsMatch()) && styles.buttonDisabled
+          ]}
+          onPress={handleChangePassword}
+          disabled={hasErrorPass() || !passwordsMatch()}
+        >
+          <Text style={styles.buttonText}>Đổi mật khẩu</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -76,37 +112,35 @@ export default ChangePassword;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    
-    backgroundColor:"white"
+    flexGrow: 1,
+    backgroundColor: "white",
+    justifyContent: 'center',
   },
-  textform: {
-    marginBottom: 8,
-    fontSize: 17,
-    margin: 30,
+  formContainer: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    backgroundColor: 'white',
-    borderColor: '#80bfff',
-    borderWidth: 1,
-    marginBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    marginBottom: 15,
   },
   button: {
-    marginTop: 20,
     backgroundColor: 'orange',
-    padding: 10,
+    padding: 15,
     borderRadius: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    marginTop: 20,
+  },
+  buttonDisabled: {
+    backgroundColor: 'gray',
   },
   buttonText: {
     textAlign: 'center',
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 30,
-    marginRight: 30,
   },
 });

@@ -4,6 +4,7 @@ import { useCart } from "../routers/CartContext"
 import { Button } from 'react-native-paper';
 import { useMyContextProvider } from "../index"
 import firestore from "@react-native-firebase/firestore"
+import colors from '../screens/colors'
 
 const MAX_TITLE_LENGTH = 20; // Độ dài tối đa của tên sản phẩm
 
@@ -46,7 +47,7 @@ const Cart = () => {
             )}
           </View>
           <View style={styles.bottomContainer}>
-            <Text style={styles.price}>{totalItemPrice.toLocaleString()} vnđ</Text>
+            <Text style={styles.price}>{totalItemPrice.toLocaleString('vi-VN')} vnđ</Text>
             <View style={styles.quantityContainer}>
               <TouchableOpacity onPress={() => decreaseQuantity(item.id, item.options)}>
                 <Text style={styles.quantityButton}>-</Text>
@@ -124,7 +125,7 @@ const Cart = () => {
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
-      <Text style={styles.total}>Tổng cộng: {total.toLocaleString()} VNĐ</Text> 
+      <Text style={styles.total}>Tổng cộng: {total.toLocaleString('vi-VN')} VNĐ</Text> 
       {/* <Button
         style={[styles.button, styles.orderButton]}
         textColor="white"
@@ -269,6 +270,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+  },
+  header: {
+    // Add any additional styles if needed
   },
 });
 

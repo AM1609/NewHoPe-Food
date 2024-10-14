@@ -7,6 +7,7 @@ import { Image } from "react-native";
 import ChangePassword from "../screens/ChangePassword";
 import Appointments from "../screens/Appointments";
 import OrderDetail from "../screens/OrderDetail";
+import colors from '../screens/colors';
 
 const Stack = createStackNavigator();
 
@@ -21,7 +22,7 @@ const RouterServiceCustomer = ({ navigation }) => {
                 title: "Đặt hàng",
                 headerTitleAlign: "left",
                 headerStyle: {
-                    backgroundColor: "orange"
+                    backgroundColor: colors.background, // Use color from colors.js
                 },
                 headerRight: (props) => (
                     <TouchableOpacity onPress={() => navigation.navigate("ProfileCustomer")}>

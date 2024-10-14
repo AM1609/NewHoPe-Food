@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Image, View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity,Image } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 import { createAccount } from '../index';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import colors from './colors'; // Import the colors module
+
 
 const Register = ({ navigation }) => {
   const [phone, setPhone] = useState('');
@@ -30,112 +31,169 @@ const Register = ({ navigation }) => {
       phone.trim() === '' ||
       address.trim() === ''
     );
-  }, [fullName, email, password, confirmPassword, phone, address, hasErrorFullName, hasErrorEmail, hasErrorPassword, hasErrorPasswordConfirm]);
+  }, [fullName, email, password, confirmPassword, phone, address]);
 
   const handleRegister = () => {
     createAccount(email, password, fullName, phone, address, role, navigation);
   };
 
   return (
-    <View style={{ flex: 1, padding: 10 , backgroundColor:"white"}}>
-      <Text style={styles.header}
-      > ĐĂNG KÍ TÀI KHOẢN </Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Đăng Ký</Text>
       <TextInput
         label={"Họ và tên"}
         value={fullName}
         onChangeText={setFullname}
-        style={styles.textinput}
+        style={styles.input}
+        mode="outlined"
+        theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
       />
-      <HelperText style={{marginLeft:25 }} type='error' visible={hasErrorFullName()} >
+      <HelperText style={styles.helperText} type='error' visible={hasErrorFullName()}>
         Full name không được phép để trống
       </HelperText>
       <TextInput
         label={"Email"}
         value={email}
         onChangeText={setEmail}
-        style={styles.textinput}
+        style={styles.input}
+        mode="outlined"
+        theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
       />
-      <HelperText style={{marginLeft:25 }} type='error' visible={hasErrorEmail()}>
+      <HelperText style={styles.helperText} type='error' visible={hasErrorEmail()}>
         Địa chỉ email không hợp lệ
       </HelperText>
-      <View style={{ flexDirection: "row",marginLeft:25 }}>
+      <View style={styles.passwordContainer}>
         <TextInput
           label={"Mật khẩu"}
           value={password}
           onChangeText={setPassword}
-          secureTextEntry={showPassword}
-          style={{ flex: 1 }}
+          secureTextEntry={!showPassword}
+          style={styles.passwordInput}
+          mode="outlined"
+          theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
         />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showPassword}>
           <Image
             source={showPassword ? require('../assets/eye.png') : require('../assets/eye-hidden.png')}
-            style={{ width: 20, height: 20,marginTop:20, marginLeft:5}}
+            style={styles.eyeIcon}
           />
         </TouchableOpacity>
       </View>
-      <HelperText style={{marginLeft:25 }} type='error' visible={hasErrorPassword()}>
+      <HelperText style={styles.helperText} type='error' visible={hasErrorPassword()}>
         Password ít nhất 6 kí tự
       </HelperText>
-      <View style={{ flexDirection: "row",marginLeft:25 }}>
+      <View style={styles.passwordContainer}>
         <TextInput
           label={"Nhập lại mật khẩu"}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          secureTextEntry={showConfirmPassword}
-          style={{ flex: 1 }}
+          secureTextEntry={!showConfirmPassword}
+          style={styles.passwordInput}
+          mode="outlined"
+          theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
         />
-        <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+        <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.showPassword}>
           <Image
             source={showConfirmPassword ? require('../assets/eye.png') : require('../assets/eye-hidden.png')}
-            style={{ width: 20, height: 20,marginTop:20, marginLeft:5}}
+            style={styles.eyeIcon}
           />
         </TouchableOpacity>
       </View>
-      
-      <HelperText style={{marginLeft:40}} type='error' visible={hasErrorPasswordConfirm()}>
+      <HelperText style={styles.helperText} type='error' visible={hasErrorPasswordConfirm()}>
         Confirm Password phải giống với Password
       </HelperText>
       <TextInput
         label={"Địa chỉ"}
         value={address}
         onChangeText={setAddress}
-        style={styles.textinput}
+        style={styles.input}
+        mode="outlined"
+        theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
       />
       <TextInput
         label={"Điện thoại"}
         value={phone}
         onChangeText={setPhone}
-        style={styles.textinput1}
+        style={styles.input}
+        mode="outlined"
+        theme={{ colors: { primary: '#000' }, fonts: { regular: { fontSize: 18 } } }}
       />
-      <Button style={styles.button} textColor='black' buttonColor='orange' mode='contained' onPress={handleRegister} disabled={disableCreate}>
+      <Button
+        mode='contained'
+        onPress={handleRegister}
+        disabled={disableCreate}
+        style={styles.registerButton}
+        labelStyle={styles.registerButtonText}
+      >
         Tạo tài khoản
       </Button>
-      <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-        <Text style={{fontSize:16}}>Bạn đã có tài khoản ?</Text>
+      <View style={styles.footer}>
         <Button onPress={() => navigation.navigate("Login")}>
-          <Text style={{fontSize:16, color:"blue"}}>Đăng nhập</Text>
+          <Text style={styles.footerText}>Quay lại Đăng nhập</Text>
         </Button>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  header:{
-    fontSize: 30,
-    fontWeight: "bold",
-    alignSelf: "center",
-    color: "orange",
-    marginTop: 70,
-    marginBottom: 70
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
   },
-  textinput:{
-    borderRadius: 10, marginRight:25,marginLeft:25
+  header: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  textinput1:{
-    borderRadius: 10, marginRight:25,marginLeft:25, marginTop:25, marginBottom:25
+  input: {
+    marginBottom: 10,
+    backgroundColor: "white",
   },
-  button:{
-    marginRight:40,marginLeft:40, borderRadius:5
-  }
-})
+  helperText: {
+    marginLeft: 10,
+    fontSize: 15,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  showPassword: {
+    marginLeft: 10,
+  },
+  eyeIcon: {
+    width: 20,
+    height: 20,
+  },
+  registerButton: {
+    borderRadius: 5,
+    backgroundColor: colors.primary,
+    marginBottom: 20,
+  },
+  registerButtonText: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  footerText: {
+    fontSize: 18,
+    color: '#fff',
+    marginHorizontal: 20,
+  },
+});
+
 export default Register;
