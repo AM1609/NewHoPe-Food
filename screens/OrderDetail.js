@@ -33,7 +33,9 @@ const OrderDetail = ({ route, navigation }) => {
             <Text style={styles.title}>Chi tiết đơn hàng</Text>
             {orderData ? (
                 <View style={styles.orderDetails}>
-                    <Text style={styles.status}>Trạng thái: {orderData.state}</Text>
+                    <Text style={styles.status}>
+                        Trạng thái: {orderData.state === 'new' ? 'Đang duyệt' : orderData.state}
+                    </Text>
                     <Text style={styles.datetime}>Thời gian: {orderData.datetime ? orderData.datetime.toDate().toLocaleString() : 'Không xác định'}</Text>
                     <Text style={styles.totalPrice}>Tổng tiền: {orderData.totalPrice} vnđ</Text>
                     <Text style={styles.summaryTitle}>Tóm tắt đơn hàng:</Text>

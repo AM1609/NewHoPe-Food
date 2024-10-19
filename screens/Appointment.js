@@ -117,11 +117,19 @@ const Appointment = ({navigation, route }) => {
             />
             <View style={styles.footer}>
                 <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={() => setQuantity(Math.max(1, quantity - 1))}>
+                    <TouchableOpacity 
+                        onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                        style={styles.quantityButtonContainer} // New style for button container
+                    >
                         <Text style={styles.quantityButton}>-</Text>
                     </TouchableOpacity>
-                    <Text style={styles.quantityText}>{quantity}</Text>
-                    <TouchableOpacity onPress={() => setQuantity(quantity + 1)}>
+                    <View style={styles.quantityDisplayContainer}> 
+                        <Text style={styles.quantityText}>{quantity}</Text>
+                    </View>
+                    <TouchableOpacity 
+                        onPress={() => setQuantity(quantity + 1)}
+                        style={styles.quantityButtonContainer} // New style for button container
+                    >
                         <Text style={styles.quantityButton}>+</Text>
                     </TouchableOpacity>
                 </View>
@@ -149,16 +157,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginVertical: 10, // Reduced margin
+        marginTop: 0, // Reduce top margin
+        marginBottom: 10, // Optional: adjust bottom margin separately
     },
     quantityButton: {
-        fontSize: 24, // Reduced font size
-        color: '#ff6347',
-        paddingHorizontal: 15, // Reduced padding
+        fontSize: 18, // Decrease font size for smaller display
+        color: 'white',
+        paddingHorizontal: 15,
     },
     quantityText: {
-        fontSize: 20, // Reduced font size
-        marginHorizontal: 8,
+        fontSize: 24, // Increase font size for larger display
         color: '#333',
     },
     addToCartButton: {
@@ -242,6 +250,25 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 25,
         paddingHorizontal: 25,
+    },
+    quantityButtonContainer: {
+        backgroundColor: '#ff6347',
+        borderRadius: 5,
+        width: 40, // Set width to make it square
+        height: 40, // Set height to make it square
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 5,
+    },
+    quantityDisplayContainer: {
+        minWidth: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingVertical: 5,
     },
 });
 

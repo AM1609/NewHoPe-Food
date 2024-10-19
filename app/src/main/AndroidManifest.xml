@@ -5,6 +5,9 @@
     <application
         android:label="NewHoPe Food">
         <!-- Your application components here -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBVdxlP0JByd95hj1-KCSCEaloi6O9EJE8"/>
     </application>
 
 </manifest>

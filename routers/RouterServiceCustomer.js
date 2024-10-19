@@ -8,6 +8,9 @@ import ChangePassword from "../screens/ChangePassword";
 import Appointments from "../screens/Appointments";
 import OrderDetail from "../screens/OrderDetail";
 import colors from '../screens/colors';
+import Map from "../screens/Map"; // Import màn hình Map
+import Payment from "../screens/Payment";
+import PaymentZalo from "../screens/PaymentZalo";
 
 const Stack = createStackNavigator();
 
@@ -48,6 +51,9 @@ const RouterServiceCustomer = ({ navigation }) => {
             />
             <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ title: "Đổi mật khẩu" }} />
             <Stack.Screen name="Appointment" component={Appointment} options={{ title: "Đặt lịch" }} />
+            <Stack.Screen name="Map" component={Map} options={{ title: "Bản đồ" }} />
+            <Stack.Screen name="Payment" component={Payment} options={{ title: "Thanh toán" }} />
+            <Stack.Screen name="PaymentZalo" component={PaymentZalo} options={{ title: "Thanh toán ZaloPay" }} />
         </Stack.Navigator>
     )
 }

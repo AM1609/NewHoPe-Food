@@ -11,7 +11,7 @@ const Stack = createStackNavigator()
 const Router = () =>{
     return(
         <Stack.Navigator
-            initialRouteName="Login"
+            // initialRouteName="Login"
             screenOptions={{
                 headerShown: false
             }}

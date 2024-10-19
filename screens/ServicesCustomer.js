@@ -63,7 +63,13 @@ const ServicesCustomer = ({ navigation }) => {
                 )}
             </View>
             <View style={styles.textContainer}>
-                <Text style={styles.serviceTitle}>{item.title}</Text>
+                <Text 
+                    style={styles.serviceTitle}
+                    numberOfLines={1}  // Limit to one line
+                    ellipsizeMode="tail"  // Add ellipsis at the end
+                >
+                    {item.title}
+                </Text>
                 <Text style={styles.servicePrice}>
                     {Number(item.price).toLocaleString('vi-VN')} vnđ
                 </Text>

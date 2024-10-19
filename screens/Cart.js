@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, TextInput } from 'react-native';
 import { useCart } from "../routers/CartContext"
 import { Button } from 'react-native-paper';
 import { useMyContextProvider } from "../index"
 import firestore from "@react-native-firebase/firestore"
 import colors from '../screens/colors'
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const MAX_TITLE_LENGTH = 20; // Độ dài tối đa của tên sản phẩm
 
@@ -26,6 +27,9 @@ const Cart = () => {
   useEffect(() => {
     setDatetime(new Date()); // Cập nhật datetime khi component được mount
   }, []);
+
+  const [promotionCode, setPromotionCode] = useState('');
+  const [discountValue, setDiscountValue] = useState(0); // State to store discount value
 
   const renderItem = ({ item }) => {
     const totalItemPrice = (item.price * item.quantity) + (item.options.reduce((sum, option) => sum + (option.price * item.quantity), 0));
@@ -118,6 +122,56 @@ const Cart = () => {
     return sum + totalItemPrice; // Cộng dồn tổng giá
   }, 0);
 
+  const navigation = useNavigation(); // Initialize navigation
+
+  const checkPromotionCode = async () => {
+    try {
+      const discountCollection = firestore().collection('Discount');
+      const querySnapshot = await discountCollection.where('code', '==', promotionCode).get();
+
+      if (!querySnapshot.empty) {
+        const discountDoc = querySnapshot.docs[0];
+        const discountData = discountDoc.data();
+        const conditionProduct = discountData.condition?.product;
+        const productInCart = cart.some(item => item.id === conditionProduct);
+  
+        // Check if the condition exists and is met, or if there is no condition
+        if (!discountData.condition || total >= parseInt(discountData.condition.total, 10)) {
+          // Check the type
+          if (discountData.type === '*') {
+            const discountAmount = total * (discountData.value / 100);
+            alert(`Mã khuyến mãi hợp lệ! Giảm giá: ${discountData.value}%`);
+            setDiscountValue(discountAmount);
+          } else if (discountData.type === '-') {
+            alert(`Mã khuyến mãi hợp lệ! Giảm giá: ${discountData.value} VNĐ`);
+            setDiscountValue(discountData.value);
+          }
+        } if (productInCart) {
+          // Check the type
+          if (discountData.type === '*') {
+            const discountAmount = total * (discountData.value / 100);
+            alert(`Mã khuyến mãi hợp lệ! Giảm giá: ${discountData.value}%`);
+            setDiscountValue(discountAmount);
+          } else if (discountData.type === '-') {
+            alert(`Mã khuyến mãi hợp lệ! Giảm giá: ${discountData.value} VNĐ`);
+            setDiscountValue(discountData.value);
+          }
+        } else if (!productInCart) {
+          alert('Mã chỉ áp dụng với sản phẩm yêu cầu.');
+        } else if (discountData.condition?.total) {
+          alert(`Tổng giá phải đạt tối thiểu ${parseInt(discountData.condition.total, 10).toLocaleString('vi-VN')} VNĐ để áp dụng mã khuyến mãi.`);
+        }
+      } else {
+        alert('Mã khuyến mãi không tồn tại.');
+      }
+    } catch (error) {
+      console.error('Error checking promotion code:', error);
+      alert('Có lỗi xảy ra khi kiểm tra mã khuyến mãi.');
+    }
+  };
+
+  const totalWithDiscount = total - discountValue;
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -125,7 +179,19 @@ const Cart = () => {
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
-      <Text style={styles.total}>Tổng cộng: {total.toLocaleString('vi-VN')} VNĐ</Text> 
+      <Text style={styles.total}>Tổng cộng: {totalWithDiscount.toLocaleString('vi-VN')} VNĐ</Text> 
+      
+      <View style={styles.promotionContainer}>
+        <TextInput
+          style={styles.promotionInput}
+          placeholder="Nhập mã khuyến mãi"
+          value={promotionCode}
+          onChangeText={setPromotionCode}
+        />
+        <TouchableOpacity style={styles.applyButton} onPress={checkPromotionCode}>
+          <Text style={styles.applyButtonText}>Áp dụng</Text>
+        </TouchableOpacity>
+      </View>
       {/* <Button
         style={[styles.button, styles.orderButton]}
         textColor="white"
@@ -146,6 +212,24 @@ const Cart = () => {
       >
         <Text style={styles.buttonText}>Xóa giỏ hàng</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity
+        style={[styles.button, styles.mapButton]} // Add a new style for the map button
+        onPress={() => navigation.navigate('Map')} // Navigate to the Map screen
+      >
+        <Text style={styles.buttonText}>Xem Bản Đồ</Text>
+      </TouchableOpacity>
+            <TouchableOpacity
+        style={[styles.button, styles.mapButton]} // Add a new style for the map button
+        onPress={() => navigation.navigate('Payment')} // Navigate to the Map screen
+      >
+            </TouchableOpacity> */}
+            <TouchableOpacity
+        style={[styles.button, styles.mapButton]} // Add a new style for the map button
+        onPress={() => navigation.navigate('PaymentZalo')} // Navigate to the Map screen
+      >
+        <Text style={styles.buttonText}>Thanh toán</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -273,6 +357,37 @@ const styles = StyleSheet.create({
   },
   header: {
     // Add any additional styles if needed
+  },
+  mapButton: {
+    backgroundColor: 'blue', // Choose a color for the map button
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  promotionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  promotionInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  applyButton: {
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 5,
+  },
+  applyButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
